@@ -1,0 +1,122 @@
+---
+title: "**MAT213 Project #1: Comparing the Lakes of Minnesota and Wisconsin**"
+author: "Bjorn Melin"
+date: "January 31, 2019"
+output: html_document
+---
+
+## Glimpse of the Original Lakes Dataset:
+Below, a glimpse of the original dataset which is a listing of the National Hydrologic Database of waterways in Minnesota and Wisconsin is displayed.  Note that there are very few variables being kept track of here which may make it harder to create a meaningful graphic.  The three variables denote the name of a lake, the state in which a lake is located, and the area of a lake in square kilometers.
+
+
+```{r, setup, include=FALSE}
+library(mdsr)
+library(tidyverse)
+
+```
+```{r, message=FALSE, echo=FALSE}
+# Load in the lake data into the workspace:
+lakes_data <- read_csv("https://raw.githubusercontent.com/jmzobitz/MAT213Datasets/master/project1_data_S19.csv")
+
+glimpse(lakes_data)
+```
+
+## Applying Name Filter to the Lakes Dataset:
+The dataset was filtered to include on those lakes in Minnesota and Wisconsin whos names contain the word “Fish”.  This narrowed the dataset down from 17,800 lakes to 91 lakes.  The goal of narrowing applying this filter was to create a subset of the dataset that would make it managable to create an imformative and easy to read data graphic for the viewer.
+
+```{r, echo=FALSE, message=FALSE}
+fish <- lakes_data %>% filter(str_detect(name, "Fish"))
+glimpse(fish)
+```
+
+
+## Key Questions to be Answered by This Graphic:
+1. What is the distribution in sizes of lakes whos names contain the word "Fish" in Minnesota and Wisconsin?  
+  
+2.  How do the sizes of these lakes compare and contrast between Minnesota and Wisconsin?  
+  
+
+
+## Creation & Explanation of the Graphic:
+  
+### Distibution in Areas Among Minnesota and Wisconsin Lakes  
+The data graphic displayed below was created from the subset of data containing all lakes in Wisconsin and Minnesota whos names contain the word "Fish".  The x-axis denotes the area of the lakes in square kilometers, the y-axis denotes the density or distribution of the different sized lakes.  The data was faceted by state so that we could see the similarities and differences between lakes with names containing the word "Fish" in both Wisconsin and Minnesota seperately.  Lastly, for this graphic a density line was created and overlayed on top of the histogram to better display the distibution.
+
+```{r, echo=FALSE, message=FALSE}
+#fish
+
+ggplot(data = fish, aes(x = AreaSqKm)) +
+  ggtitle(label = "Density Plot of Lakes in MN & WI Whos Names Contain 'Fish'") +
+  geom_histogram(aes(x= AreaSqKm, y = ..density..), 
+           fill = "#b2d7e9", colour = "black", bins = 30) +
+  xlab(label = "Area of Lakes (Square Km)") +
+  ylab(label = "Density") +
+  facet_grid(.~state) +
+  geom_density(colour = "red") 
+```  
+
+
+The graphic below shows the same statistics but in a different manner.  Instead of displaying the actual density value, it displays the count.  The count denotes how many lakes in Minnesota and Wisconsin containing the word "Fish" in their name fall under each different size (area in square Km).
+
+```{r, echo=FALSE, message=FALSE}
+#fish
+
+ggplot(data = fish, aes(x = AreaSqKm)) +
+  ggtitle(label = "Density Plot of Lakes in MN & WI Whos Names Contain 'Fish'") +
+  geom_histogram(aes(x= AreaSqKm, y = ..count..), 
+           fill = "#b2d7e9", colour = "black", bins = 30) +
+  xlab(label = "Area of Lakes (Square Km)") +
+  ylab(label = "Count (Number of Lakes)") +
+  facet_grid(.~state)
+```
+
+### Mean & Median Lake Areas Computed for Lakes Whos Titles Contain "Fish":
+##### Mean & Median Areas (Sq KM) of All Lakes in Dataset
+
+```{r, echo=FALSE, message=FALSE}
+# Below, the mean and median values for the entire dataset are found.
+cat("Mean:\t", mean(fish$AreaSqKm))
+cat("\n")
+cat("Median:\t", median(fish$AreaSqKm))
+```
+
+##### Mean & Median Areas (Sq KM) of Minnesota lakes in Dataset
+
+```{r, echo=FALSE, message=FALSE}
+MN_fish <- fish %>% filter(state == "MN")
+# Below, the mean and median values for MN lakes are found
+cat("Mean:\t", mean(MN_fish$AreaSqKm))
+cat("\n")
+cat("Median:\t", median(MN_fish$AreaSqKm))
+```
+
+
+##### Mean & Median Areas (Sq KM) of Wisconsin lakes in Dataset
+
+```{r, echo=FALSE, message=FALSE}
+WI_fish <- fish %>% filter(state == "WI")
+# Below, the mean and median values for WI lakes are found
+cat("Mean:\t", mean(WI_fish$AreaSqKm))
+cat("\n")
+cat("Median:\t", median(WI_fish$AreaSqKm))
+```
+
+
+## Conclusion
+#### Key Findings:
+*  We are able to answer our first key question of what the distribution in sizes of lakes whos name cobtain the word "Fish" in Minnesota and Wisconsin is.  The distribution in sizes of lakes containing the word "Fish" in their title for both Minnesota and Wisconsin is centered at around 1 SqKm in area.  
+  
+*  The distribution in sizes of these lakes in Wisconsin varies far less than in Minnesota.  We see that in Minnesota, there are a few extreme outliers.  Thus, making the average (mean) size of the Minnesota lakes in the "Fish" dataset well over double the average size of those in Wisconsin.  
+  
+*  Observing the mean and median values for the "Fish" dataset as a whole, lakes only in Minnesota, and lakes only in Wisconsin seperately allowed us to answer our key question of how these compare and contrast between Minnesota and Wisconsin.  When these numerical results are paired with the data visualizations I created, it allows us to see clearly that in both states lakes containing "Fish" in their name have an area of approximately 0.325 SqKm.  Also, we see that Minnesota has many more lakes whos names contain "Fish" and their sazes vary much more than those in Wisconsin.  
+  
+*  By creating plots with y-axes denoting density and count, we are able to solidify any conclusions that can be make from these graphics by providing a bit of additional information.    
+  
+*  Based on the data visualizations and statistics shown above, our key questions have been answered and the results have effectively displayed meaningful comparisons between lakes in Minnesota and Wisconsin.  
+
+
+
+## Future Work:
+  
+In the future, it might be fun to try to display the mean and median values in the actual data graphics.  It would be nice to find a way to have all of the information displayed all in one image.  However, I struggled a bit in implementing my code and could not get it to work well enough to use.  Using what I have learned from this project, in the future I hope to work more with big data and learn how to handle even larger datasets.  This summer I will be handling a lot of big data at work so without a doubt there will be plenty of work on similar projects for me in the future!
+
